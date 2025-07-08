@@ -5,134 +5,164 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema Little_lemon_db
+-- Schema little_lemon_db
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema Little_lemon_db
+-- Schema little_lemon_db
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `Little_lemon_db` DEFAULT CHARACTER SET utf8 ;
-USE `Little_lemon_db` ;
+CREATE SCHEMA IF NOT EXISTS `little_lemon_db` DEFAULT CHARACTER SET utf8mb3 ;
+USE `little_lemon_db` ;
 
 -- -----------------------------------------------------
--- Table `Little_lemon_db`.`Customer`
+-- Table `little_lemon_db`.`customer`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Little_lemon_db`.`Customer` (
-  `CustomerId` INT NOT NULL,
-  `CustomerName` VARCHAR(45) NULL,
-  `Phonenumber` CHAR(10) NULL,
-  `CustomerEmail` VARCHAR(255) NULL,
+CREATE TABLE IF NOT EXISTS `little_lemon_db`.`customer` (
+  `CustomerId` VARCHAR(100) NOT NULL,
+  `CustomerName` VARCHAR(45) NULL DEFAULT NULL,
+  `Phonenumber` CHAR(10) NULL DEFAULT NULL,
+  `CustomerEmail` VARCHAR(255) NULL DEFAULT NULL,
   PRIMARY KEY (`CustomerId`))
-ENGINE = InnoDB;
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `Little_lemon_db`.`Bookings`
+-- Table `little_lemon_db`.`bookings`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Little_lemon_db`.`Bookings` (
+CREATE TABLE IF NOT EXISTS `little_lemon_db`.`bookings` (
   `BookingId` INT NOT NULL,
-  `BookingDate` DATE NULL,
-  `Table_no` INT NULL,
-  `CustomerId` INT NULL,
+  `BookingDate` DATE NULL DEFAULT NULL,
+  `Table_no` INT NULL DEFAULT NULL,
+  `CustomerId` VARCHAR(100) NULL DEFAULT NULL,
   PRIMARY KEY (`BookingId`),
   INDEX `CustomerId_idx` (`CustomerId` ASC) VISIBLE,
   CONSTRAINT `CustomerId`
     FOREIGN KEY (`CustomerId`)
-    REFERENCES `Little_lemon_db`.`Customer` (`CustomerId`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    REFERENCES `little_lemon_db`.`customer` (`CustomerId`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `Little_lemon_db`.`Staff`
+-- Table `little_lemon_db`.`menuitem`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Little_lemon_db`.`Staff` (
-  `StaffId` INT NOT NULL,
-  `StaffName` VARCHAR(45) NULL,
-  `Role` VARCHAR(45) NULL,
-  PRIMARY KEY (`StaffId`))
-ENGINE = InnoDB;
+CREATE TABLE IF NOT EXISTS `little_lemon_db`.`menuitem` (
+  `MenuitemsId` VARCHAR(100) NOT NULL,
+  `Coursename` VARCHAR(100) NULL DEFAULT NULL,
+  `StarterName` VARCHAR(100) NULL DEFAULT NULL,
+  `DesertName` VARCHAR(100) NULL DEFAULT NULL,
+  `Drinks` VARCHAR(100) NULL DEFAULT NULL,
+  `Sides` VARCHAR(100) NULL DEFAULT NULL,
+  PRIMARY KEY (`MenuitemsId`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `Little_lemon_db`.`category`
+-- Table `little_lemon_db`.`menu`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Little_lemon_db`.`category` (
-  `Category_Id` INT NOT NULL,
-  `CategoryName` VARCHAR(45) NULL,
-  PRIMARY KEY (`Category_Id`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `Little_lemon_db`.`Menu`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Little_lemon_db`.`Menu` (
+CREATE TABLE IF NOT EXISTS `little_lemon_db`.`menu` (
   `Men_Id` INT NOT NULL,
-  `Category_Id` VARCHAR(255) NULL,
-  `itemName` VARCHAR(45) NULL,
-  `Description` VARCHAR(255) NULL,
-  `Price` DECIMAL NULL,
+  `itemName` VARCHAR(45) NULL DEFAULT NULL,
+  `Description` VARCHAR(255) NULL DEFAULT NULL,
+  `Price` DECIMAL(10,0) NULL DEFAULT NULL,
+  `Cuisine_name` VARCHAR(255) NULL DEFAULT NULL,
+  `MenuitemsId` VARCHAR(100) NULL DEFAULT NULL,
   PRIMARY KEY (`Men_Id`),
-  INDEX `CategoryId_idx` (`Category_Id` ASC) VISIBLE,
-  CONSTRAINT `Fk_CategoryId`
-    FOREIGN KEY (`Category_Id`)
-    REFERENCES `Little_lemon_db`.`category` (`Category_Id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+  INDEX `MenuitemsId` (`MenuitemsId` ASC) VISIBLE,
+  CONSTRAINT `MenuitemsId`
+    FOREIGN KEY (`MenuitemsId`)
+    REFERENCES `little_lemon_db`.`menuitem` (`MenuitemsId`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `Little_lemon_db`.`Orders`
+-- Table `little_lemon_db`.`staff`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Little_lemon_db`.`Orders` (
-  `Order_Id` INT NOT NULL,
-  `OrdersDate` DATE NULL,
-  `Quantity` INT NULL,
-  `TotalCost` DECIMAL NULL,
-  `Booking_Id` INT NULL,
-  `Staff_Id` INT NULL,
-  `Mneu_Id` INT NULL,
+CREATE TABLE IF NOT EXISTS `little_lemon_db`.`staff` (
+  `StaffId` INT NOT NULL,
+  `StaffName` VARCHAR(45) NULL DEFAULT NULL,
+  `Role` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`StaffId`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
+
+-- -----------------------------------------------------
+-- Table `little_lemon_db`.`orders`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `little_lemon_db`.`orders` (
+  `Order_Id` VARCHAR(100) NOT NULL,
+  `OrdersDate` DATE NULL DEFAULT NULL,
+  `Quantity` INT NULL DEFAULT NULL,
+  `TotalCost` DECIMAL(10,0) NULL DEFAULT NULL,
+  `Booking_Id` INT NULL DEFAULT NULL,
+  `Staff_Id` INT NULL DEFAULT NULL,
+  `Mneu_Id` INT NULL DEFAULT NULL,
   PRIMARY KEY (`Order_Id`),
   INDEX `BookingId_idx` (`Booking_Id` ASC) VISIBLE,
   INDEX `Staffid_idx` (`Staff_Id` ASC) VISIBLE,
   INDEX `MenuId_idx` (`Mneu_Id` ASC) VISIBLE,
   CONSTRAINT `BookingId`
     FOREIGN KEY (`Booking_Id`)
-    REFERENCES `Little_lemon_db`.`Bookings` (`BookingId`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `Staffid`
-    FOREIGN KEY (`Staff_Id`)
-    REFERENCES `Little_lemon_db`.`Staff` (`StaffId`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    REFERENCES `little_lemon_db`.`bookings` (`BookingId`),
   CONSTRAINT `MenuId`
     FOREIGN KEY (`Mneu_Id`)
-    REFERENCES `Little_lemon_db`.`Menu` (`Men_Id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    REFERENCES `little_lemon_db`.`menu` (`Men_Id`),
+  CONSTRAINT `Staffid`
+    FOREIGN KEY (`Staff_Id`)
+    REFERENCES `little_lemon_db`.`staff` (`StaffId`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
 
 
 -- -----------------------------------------------------
--- Table `Little_lemon_db`.`Delivery`
+-- Table `little_lemon_db`.`delivery`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Little_lemon_db`.`Delivery` (
+CREATE TABLE IF NOT EXISTS `little_lemon_db`.`delivery` (
   `DeliveryId` INT NOT NULL,
-  `DeliveryStatus` VARCHAR(45) NULL,
-  `DeliveryDate` DATE NULL,
-  `Order_id` INT NULL,
+  `DeliveryStatus` VARCHAR(45) NULL DEFAULT NULL,
+  `DeliveryDate` DATE NULL DEFAULT NULL,
+  `Order_id` VARCHAR(100) NULL DEFAULT NULL,
+  `delivery_cost` DECIMAL(10,0) NULL DEFAULT NULL,
   PRIMARY KEY (`DeliveryId`),
   INDEX `Fk_order_id_idx` (`Order_id` ASC) VISIBLE,
-  CONSTRAINT `Fk_order_id`
+  CONSTRAINT `Order_id`
     FOREIGN KEY (`Order_id`)
-    REFERENCES `Little_lemon_db`.`Orders` (`Order_Id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+    REFERENCES `little_lemon_db`.`orders` (`Order_Id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
+
+-- -----------------------------------------------------
+-- Table `little_lemon_db`.`littlelemon_data_1`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `little_lemon_db`.`littlelemon_data_1` (
+  `Row_num` INT NULL DEFAULT NULL,
+  `Order_ID` VARCHAR(100) NULL DEFAULT NULL,
+  `Order_date` DATE NULL DEFAULT NULL,
+  `Delivery_Date` DATE NULL DEFAULT NULL,
+  `CustomerId` VARCHAR(100) NULL DEFAULT NULL,
+  `Customer_name` VARCHAR(100) NULL DEFAULT NULL,
+  `City` TEXT NULL DEFAULT NULL,
+  `Country` TEXT NULL DEFAULT NULL,
+  `Postal Code` TEXT NULL DEFAULT NULL,
+  `Country Code` TEXT NULL DEFAULT NULL,
+  `Cost` INT NULL DEFAULT NULL,
+  `Sales` DOUBLE NULL DEFAULT NULL,
+  `Quantity` INT NULL DEFAULT NULL,
+  `Discount` DOUBLE NULL DEFAULT NULL,
+  `Delivery_cost` DECIMAL(10,0) NULL DEFAULT NULL,
+  `Course_Name` VARCHAR(255) NULL DEFAULT NULL,
+  `Cuisine_Name` VARCHAR(255) NULL DEFAULT NULL,
+  `Starter_Name` VARCHAR(255) NULL DEFAULT NULL,
+  `Desert_Name` VARCHAR(255) NULL DEFAULT NULL,
+  `Drink` TEXT NULL DEFAULT NULL,
+  `Sides` TEXT NULL DEFAULT NULL)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
 
 
 SET SQL_MODE=@OLD_SQL_MODE;
